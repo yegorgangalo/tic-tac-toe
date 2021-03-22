@@ -1,0 +1,55 @@
+.containerXO {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.containerXO section {
+  margin-bottom: 12px;
+}
+
+/* .playField {
+  margin-bottom: 12px;
+}
+
+.playField td {
+  text-align: center;
+  width: 100px;
+  height: 100px;
+  cursor: pointer;
+  border: solid 2px #ffca6e;
+  background: #fffb7f;
+}
+
+.playField td:hover {
+  background: #ffca6e;
+} */
+
+/* .scoreWrap {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.scorePlayer {
+  display: flex;
+  flex-direction: column;
+} */
+
+.refresh {
+  display: flex;
+}
+
+.btn {
+  display: block !important;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+  margin: 0 auto !important;
+}

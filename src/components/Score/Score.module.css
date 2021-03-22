@@ -1,0 +1,10 @@
+.scoreWrap {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.scorePlayer {
+  display: flex;
+  flex-direction: column;
+}

@@ -1,0 +1,17 @@
+.inputName {
+  width: 100% !important;
+  margin-bottom: 15px !important;
+}
+
+.radioGroup {
+  margin-bottom: 15px !important;
+}
+
+.submitBtn {
+  display: block !important;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+  padding-left: 30px !important;
+  padding-right: 30px !important;
+  margin: 0 auto !important;
+}
