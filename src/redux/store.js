@@ -1,25 +1,33 @@
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
-import logger from 'redux-logger';
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER, } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import playersReducer from './players/players-reducer';//FIXME:
+import playersReducer from './players/players-reducer';
+import playCellsReducer from './playCells/playCells-reducer';
+import { PLAYER_TYPE } from './players/players-types';
+import { CELLS_TYPE } from './playCells/playCells-types';
 
 const middleware = [
   ...getDefaultMiddleware({
     serializableCheck: {
-      ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER, PLAYER_TYPE, CELLS_TYPE],
     },
   }),
-  logger,
 ];
 
-const PersistConfig = {
-  key: 'players',//FIXME:
-  storage,
+const PersistConfigPlayers = {
+  key: 'players',
+  storage
+};
+const PersistConfigCells = {
+  key: 'cells',
+  storage
 };
 
 export const store = configureStore({
-  reducer: { contacts: persistReducer(PersistConfig, playersReducer) },//FIXME:
+  reducer: {
+    players: persistReducer(PersistConfigPlayers, playersReducer),
+    playCells: persistReducer(PersistConfigCells, playCellsReducer),
+  },
   middleware,
   devTools: process.env.NODE_ENV === 'development',
 });

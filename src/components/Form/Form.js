@@ -1,48 +1,75 @@
-// import { useState } from 'react';
-// import PropTypes from 'prop-types';
-import s from './Form.module.css';
-import { useForm, Controller } from "react-hook-form";
-import { Button, Radio, FormControlLabel, RadioGroup, TextField } from '@material-ui/core';
+import styles from './Form.module.css';
+import { useDispatch } from 'react-redux';
+import * as playersActions from '../../redux/players/players-actions';
+import * as playCellsActions from '../../redux/playCells/playCells-actions';
 
-function Form({ toggleScreens, setPlayers }) {
-    const { handleSubmit, reset, control } = useForm();
+import { Form, Field } from 'react-final-form'
+
+function PlayersForm() {
+    const dispatch = useDispatch();
+
+    const setPlayers = ({ namePlayer1, namePlayer2, player1Suit }) => {
+        const player1Obj = { name: namePlayer1 || "Player1", suit: player1Suit || "X", victory: 0 }
+        const player2Obj = { name: namePlayer2 || "Player2", suit: !player1Suit || player1Suit === "X" ? "O" : "X", victory: 0 }
+        dispatch(playersActions.setPlayer1(player1Obj));
+        dispatch(playersActions.setPlayer2(player2Obj));
+        dispatch(playersActions.setCurrentPlayer(player1Obj));
+    }
 
     const formSubmit = (data) => {
         setPlayers(data);
-        console.log(data);
-        toggleScreens();
-        reset();
+        dispatch(playCellsActions.toggleShowCellsScreen());
     }
-
     return (
-        <form autoComplete="on" onSubmit={handleSubmit(formSubmit)}>
-            <Controller
-                  name="namePlayer1"
-                  control={control}
-                  defaultValue=""
-                as={<TextField rowsMax={1} label="Player1 Name" placeholder="Antonio" multiline variant="outlined" className={s.inputName} /> }
-            />
-            <Controller
-                  name="namePlayer2"
-                  control={control}
-                  defaultValue=""
-                  as={ <TextField rowsMax={1} label="Player2 Name" placeholder="Rozetta" multiline variant="outlined" className={s.inputName} /> }
-            />
-
-            <Controller
-                name="player1Suit"
-                control={control}
-                defaultValue="X"
-                as={
-                    <RadioGroup aria-label="chooseSuit" name="chooseSuit" className={s.radioGroup} >
-                      <FormControlLabel control={<Radio />} value="X" label="Player1 plays with X"/>
-                      <FormControlLabel control={<Radio />} value="O" label="Player1 plays with O" />
-                    </RadioGroup>
-                }
-            />
-            <Button type="submit" color="primary" variant="contained" className={s.submitBtn} >Play</Button>
-        </form>
+        <Form
+            onSubmit={formSubmit}
+            render={({handleSubmit, submitting}) => (
+            <form autoComplete="on" onSubmit={handleSubmit}>
+                <div className={styles.inputName}>
+                  <label htmlFor="namePlayer1" >Player1 Name</label>
+                  <Field
+                    id="namePlayer1"
+                    name="namePlayer1"
+                    component="input"
+                    type="text"
+                    placeholder="Antonio"
+                  />
+                  <label htmlFor="namePlayer2" >Player2 Name</label>
+                  <Field
+                    id="namePlayer2"
+                    name="namePlayer2"
+                    component="input"
+                    type="text"
+                    placeholder="Rozetta"
+                  />
+                </div>
+                <div className={styles.radioGroup} >
+                    <label>
+                      <Field
+                        name="player1Suit"
+                        component="input"
+                        type="radio"
+                        value="X"
+                      />{' '}
+                      Player1 plays with X
+                    </label>
+                    <label>
+                      <Field
+                        name="player1Suit"
+                        component="input"
+                        type="radio"
+                        value="O"
+                      />{' '}
+                      Player1 plays with O
+                    </label>
+                </div>
+                <button type="submit" disabled={submitting} className={styles.submitBtn} >
+                  Submit
+                </button>
+            </form>
+            )}
+        />
     )
 }
 
-export default Form;
+export default PlayersForm;

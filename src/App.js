@@ -1,27 +1,17 @@
-import { useState, useEffect } from 'react';
-import './App.module.css';
+import { useEffect, useCallback } from 'react';
 import Modal from './components/Modal';
 import Form from './components/Form';
 import PlayScreen from './components/PlayScreen';
 import TurnToPlay from './components/TurnToPlay';
 import PlayTable from './components/PlayTable';
 import Score from './components/Score';
+import { useSelector, useDispatch } from 'react-redux';
+import { getPlayer1, getCurrentPlayer } from './redux/players/players-selectors';
+import { getCount, getCells, getShowCellsScreen } from './redux/playCells/playCells-selectors';
+import * as playersActions from './redux/players/players-actions';
+import * as playCellsActions from './redux/playCells/playCells-actions';
 
-
-function App() {
-  const [showModal, setShowModal] = useState(true);
-  const [showPlayScreen, setShowPlayScreen] = useState(false);
-  const [player1, setPlayer1] = useState({name: "Player1", suit: "X", victory: 0});
-  const [player2, setPlayer2] = useState({name: "Player2", suit: "O", victory: 0});
-  const [currentPlayer, setCurrentPlayer] = useState(player1);
-  const [playCells, setPlayCells] = useState(["","","","","","","","",""]);
-
-  const refreshPlayCells = () => {
-      setPlayCells(["", "", "", "", "", "", "", "", ""]);
-    }
-
-  useEffect(() => {
-    const winCombinations = [
+const winCombinations = [
 	  	[0, 1, 2],
 	  	[3, 4, 5],
 	  	[6, 7, 8],
@@ -32,69 +22,65 @@ function App() {
 	  	[2, 4, 6],
     ];
 
-    const isWinner = (cellCollection) => {
-        return !!winCombinations.find(combo => {
-            const cell1 = cellCollection[combo[0]];
-            const cell2 = cellCollection[combo[1]];
-            const cell3 = cellCollection[combo[2]];
-            return cell1 === cell2 && cell2 === cell3 && cell3 !== "";
-            }
-        )
-    }
 
-    const isAllCellsMarked = () => {
-      return playCells.find(cell => !cell)===undefined;
-    }
+const isWinner = (cellCollection, countValue) => {
+  if (countValue < 5) {
+    return;
+  }
+  const winComboIdx = winCombinations.findIndex(combo => {
+      const cell1 = cellCollection[combo[0]];
+      const cell2 = cellCollection[combo[1]];
+      const cell3 = cellCollection[combo[2]];
+      return cell1 === cell2 && cell2 === cell3 && cell3 !== "";
+      }
+  )
+  return winComboIdx > -1;
+}
 
-    const addPlusOneVictory = () => {
-      currentPlayer.name === player1.name
-        ? setPlayer1({ ...player1, victory: player1.victory += 1 })
-        : setPlayer2({ ...player2, victory: player2.victory += 1 });
-    }
+function App() {
+  const dispatch = useDispatch();
+  const count = useSelector(getCount);
+  const playCells = useSelector(getCells);
+  const showCellsScreen = useSelector(getShowCellsScreen);
+  const player1 = useSelector(getPlayer1);
+  const currentPlayer = useSelector(getCurrentPlayer);
 
-    if (isWinner(playCells)) {
+  const addPlusOneVictory = useCallback(() => {
+    const increaseVictory = currentPlayer.name === player1.name
+      ? playersActions.increaseVictory2
+      : playersActions.increaseVictory1;
+    dispatch(increaseVictory());
+  }, [currentPlayer, player1, dispatch]);
+
+  const refreshPlayCells = useCallback(() => {
+    dispatch(playCellsActions.refreshCells());
+    dispatch(playCellsActions.refreshCount());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (isWinner(playCells, count)) {
       addPlusOneVictory();
       refreshPlayCells();
-      return;
     }
+  }, [count, playCells, addPlusOneVictory, refreshPlayCells])
 
-    if (isAllCellsMarked()) {
+   useEffect(() => {
+    if (count >= 9) {
       refreshPlayCells();
     }
-  }, [playCells, currentPlayer.name, player1, player2])
-
-  const toggleScreens = () => {
-    setShowModal(!showModal);
-    setShowPlayScreen(!showPlayScreen);
-  };
-
-  const setPlayers = ({namePlayer1, namePlayer2, player1Suit}) => {
-    const player1Obj = {name: namePlayer1 || "Player1", suit: player1Suit || "X", victory: 0}
-    const player2Obj = { name: namePlayer2 || "Player2", suit: player1Suit === "X" ? "O" : "X", victory: 0 }
-    setPlayer1(player1Obj);
-    setPlayer2(player2Obj);
-  }
-
-  const handleTurn = ({ target: { id, textContent } }) => {
-    if (textContent !== "") {
-      return;
-    }
-    const newPlayCells = [...playCells];
-    newPlayCells[id] = currentPlayer.suit;
-    setPlayCells(newPlayCells)
-    setCurrentPlayer(currentPlayer.name===player1.name ? player2 : player1)
-  }
+  }, [count, refreshPlayCells])
 
   return (
     <div>
-      {showModal && <Modal>
-        <Form toggleScreens={toggleScreens} setPlayers={setPlayers}/>
-      </Modal>}
-      {showPlayScreen && <PlayScreen toggleScreens={toggleScreens} refreshPlayCells={refreshPlayCells} >
-        <TurnToPlay currentPlayer={currentPlayer} />
-        <PlayTable playCells={playCells} handleTurn={handleTurn}/>
-        <Score player1={player1} player2={player2} />
-      </PlayScreen>}
+      {showCellsScreen
+        ? <PlayScreen >
+            <TurnToPlay />
+            <PlayTable/>
+            <Score/>
+          </PlayScreen>
+        : <Modal>
+            <Form/>
+          </Modal>}
     </div>
   );
 }

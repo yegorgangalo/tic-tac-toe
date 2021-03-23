@@ -1,6 +1,7 @@
 .playTable {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   margin-bottom: 12px;
   margin-left: -2px;
 }

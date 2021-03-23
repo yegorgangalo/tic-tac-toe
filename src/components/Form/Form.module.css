@@ -1,17 +1,20 @@
 .inputName {
-  width: 100% !important;
-  margin-bottom: 15px !important;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
 }
 
 .radioGroup {
-  margin-bottom: 15px !important;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
 }
 
 .submitBtn {
-  display: block !important;
-  padding-top: 10px !important;
-  padding-bottom: 10px !important;
-  padding-left: 30px !important;
-  padding-right: 30px !important;
-  margin: 0 auto !important;
+  display: block;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 30px;
+  padding-right: 30px;
+  margin: 0 auto;
 }
