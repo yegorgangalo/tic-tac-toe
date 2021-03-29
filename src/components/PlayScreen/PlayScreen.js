@@ -1,20 +1,32 @@
 import { Button } from '@material-ui/core';
-import s from './PlayScreen.module.css';
+import styles from './PlayScreen.module.css';
+import { useDispatch } from 'react-redux';
+import * as playCellsActions from '../../redux/playCells/playCells-actions';
 
-export default function PlayScreen({toggleScreens, refreshPlayCells, children}) {
+export default function PlayScreen({children}) {
+    const dispatch = useDispatch();
+
+    const refreshPlayCells = () => {
+        dispatch(playCellsActions.refreshCells());
+        dispatch(playCellsActions.refreshCount());
+    }
 
     const restartGame = () => {
-        toggleScreens();
+        dispatch(playCellsActions.toggleShowCellsScreen());
         refreshPlayCells();
     }
 
     return (
-        <div className={s.containerXO}>
+        <div className={styles.containerXO}>
             <h1>Tic Tac Toe</h1>
             {children}
-            <section className={s.refresh}>
-                <Button type="button" color="primary" variant="contained" className={s.btn} >Refresh Battle</Button>
-                <Button type="button" color="primary" variant="contained" className={s.btn} onClick={restartGame} >Restart Game</Button>
+            <section className={styles.refresh}>
+                <Button type="button" color="primary" variant="contained" className={styles.btn} onClick={refreshPlayCells} >
+                    Refresh Battle
+                </Button>
+                <Button type="button" color="primary" variant="contained" className={styles.btn} onClick={restartGame} >
+                    Restart Game
+                </Button>
             </section>
         </div>
     )
